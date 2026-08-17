@@ -11,16 +11,26 @@ interface SlateControlsProps {
   onClear: () => void
 }
 
-const btnBase: React.CSSProperties = {
-  width: 44,
-  height: 44,
-  borderRadius: 8,
+const barStyle: React.CSSProperties = {
+  flexShrink: 0,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  fontSize: 18,
+  gap: 10,
+  padding: '10px 14px',
+  background: '#322d28',
+  borderTop: '1px solid rgba(255,255,255,0.06)',
+}
+
+const btnBase: React.CSSProperties = {
+  width: 44,
+  height: 44,
+  borderRadius: 10,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
   color: '#c8bfb0',
-  background: 'rgba(0,0,0,0.25)',
+  background: 'rgba(255,255,255,0.06)',
   transition: 'background 0.15s, color 0.15s',
   flexShrink: 0,
 }
@@ -31,34 +41,24 @@ const btnActive: React.CSSProperties = {
   color: '#fff',
 }
 
-const containerStyle: React.CSSProperties = {
-  position: 'absolute',
-  bottom: 12,
-  left: '50%',
-  transform: 'translateX(-50%)',
-  display: 'flex',
-  gap: 8,
-  alignItems: 'center',
-  zIndex: 10,
-}
-
-const soundStyle: React.CSSProperties = {
-  position: 'absolute',
-  top: 10,
-  right: 10,
-  zIndex: 10,
+const dividerStyle: React.CSSProperties = {
+  width: 1,
+  height: 28,
+  background: 'rgba(255,255,255,0.1)',
+  flexShrink: 0,
 }
 
 const colorDot = (color: string, active: boolean): React.CSSProperties => ({
-  width: 28,
-  height: 28,
+  width: 30,
+  height: 30,
   borderRadius: '50%',
   background: color,
-  border: active ? '2px solid rgba(255,255,255,0.8)' : '2px solid rgba(255,255,255,0.2)',
-  boxShadow: active ? `0 0 8px ${color}` : 'none',
+  border: active ? '2.5px solid rgba(255,255,255,0.85)' : '2px solid rgba(255,255,255,0.15)',
+  boxShadow: active ? `0 0 10px ${color}` : 'none',
   transition: 'border 0.15s, box-shadow 0.15s',
   cursor: 'pointer',
   flexShrink: 0,
+  padding: 0,
 })
 
 export default function SlateControls({ tool, chalkColor, onToolChange, onColorChange, onClear }: SlateControlsProps) {
@@ -88,94 +88,83 @@ export default function SlateControls({ tool, chalkColor, onToolChange, onColorC
   }, [])
 
   return (
-    <>
-      <div
-        style={soundStyle}
-        onPointerDown={(e) => e.stopPropagation()}
+    <div style={barStyle}>
+      {CHALK_COLORS.map((c) => (
+        <button
+          key={c}
+          onClick={() => onColorChange(c)}
+          style={colorDot(c, chalkColor === c && tool === 'chalk')}
+          aria-label={`Chalk color ${c}`}
+          title={c}
+        />
+      ))}
+
+      <div style={dividerStyle} />
+
+      <button
+        onClick={() => onToolChange(tool === 'chalk' ? 'eraser' : 'chalk')}
+        style={tool === 'eraser' ? btnActive : btnBase}
+        aria-label={tool === 'chalk' ? 'Switch to eraser' : 'Switch to chalk'}
+        title={tool === 'chalk' ? 'Eraser' : 'Chalk'}
       >
-        <button
-          onClick={toggleMute}
-          style={{
-            ...btnBase,
-            background: 'rgba(0,0,0,0.3)',
-          }}
-          aria-label={muted ? 'Unmute chalk sound' : 'Mute chalk sound'}
-          title={muted ? 'Sound off' : 'Sound on'}
-        >
-          {muted ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-              <line x1="23" y1="9" x2="17" y2="15" />
-              <line x1="17" y1="9" x2="23" y2="15" />
-            </svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-            </svg>
-          )}
-        </button>
-      </div>
+        {tool === 'chalk' ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L14.8 1.4c.8-.8 2-.8 2.8 0l5 5c.8.8.8 2 0 2.8L11 20" />
+            <path d="M6 12l6-6" />
+          </svg>
+        ) : (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L14.8 1.4c.8-.8 2-.8 2.8 0l5 5c.8.8.8 2 0 2.8L11 20" />
+          </svg>
+        )}
+      </button>
 
-      <div
-        style={containerStyle}
-        onPointerDown={(e) => e.stopPropagation()}
+      <button
+        onClick={handleClear}
+        style={{
+          ...btnBase,
+          background: showConfirm ? 'rgba(180,60,40,0.5)' : 'rgba(255,255,255,0.06)',
+          width: 'auto',
+          padding: '0 14px',
+          fontSize: 13,
+          fontWeight: 500,
+        }}
+        aria-label={showConfirm ? 'Confirm clear' : 'Clear slate'}
+        title={showConfirm ? 'Tap again to clear' : 'Clear'}
       >
-        {CHALK_COLORS.map((c) => (
-          <button
-            key={c}
-            onClick={() => onColorChange(c)}
-            style={colorDot(c, chalkColor === c && tool === 'chalk')}
-            aria-label={`Chalk color ${c}`}
-            title={c}
-          />
-        ))}
+        {showConfirm ? 'Clear?' : (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+          </svg>
+        )}
+      </button>
 
-        <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.15)', flexShrink: 0 }} />
+      <div style={dividerStyle} />
 
-        <button
-          onClick={() => onToolChange(tool === 'chalk' ? 'eraser' : 'chalk')}
-          style={tool === 'eraser' ? btnActive : btnBase}
-          aria-label={tool === 'chalk' ? 'Switch to eraser' : 'Switch to chalk'}
-          title={tool === 'chalk' ? 'Eraser' : 'Chalk'}
-        >
-          {tool === 'chalk' ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L14.8 1.4c.8-.8 2-.8 2.8 0l5 5c.8.8.8 2 0 2.8L11 20" />
-              <path d="M6 12l6-6" />
-            </svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L14.8 1.4c.8-.8 2-.8 2.8 0l5 5c.8.8.8 2 0 2.8L11 20" />
-            </svg>
-          )}
-        </button>
-
-        <button
-          onClick={handleClear}
-          style={{
-            ...btnBase,
-            background: showConfirm ? 'rgba(180,60,40,0.5)' : 'rgba(0,0,0,0.25)',
-            fontSize: 13,
-            width: 'auto',
-            padding: '0 14px',
-            fontWeight: 500,
-          }}
-          aria-label={showConfirm ? 'Confirm clear' : 'Clear slate'}
-          title={showConfirm ? 'Tap again to clear' : 'Clear'}
-        >
-          {showConfirm ? 'Clear?' : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6" />
-              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-              <path d="M10 11v6" />
-              <path d="M14 11v6" />
-              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-            </svg>
-          )}
-        </button>
-      </div>
-    </>
+      <button
+        onClick={toggleMute}
+        style={btnBase}
+        aria-label={muted ? 'Unmute chalk sound' : 'Mute chalk sound'}
+        title={muted ? 'Sound off' : 'Sound on'}
+      >
+        {muted ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <line x1="23" y1="9" x2="17" y2="15" />
+            <line x1="17" y1="9" x2="23" y2="15" />
+          </svg>
+        ) : (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+          </svg>
+        )}
+      </button>
+    </div>
   )
 }

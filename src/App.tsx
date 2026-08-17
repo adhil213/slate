@@ -7,19 +7,25 @@ const appStyle: React.CSSProperties = {
   width: '100%',
   height: '100%',
   display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  flexDirection: 'column',
   background: '#3a3530',
   overflow: 'hidden',
-  position: 'relative',
+}
+
+const slateAreaStyle: React.CSSProperties = {
+  flex: 1,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '10px 14px',
+  minHeight: 0,
 }
 
 const slateFrameStyle: React.CSSProperties = {
-  width: 'calc(100% - 28px)',
-  height: 'calc(100% - 28px)',
+  width: '100%',
+  height: '100%',
   maxWidth: 900,
-  maxHeight: 1200,
-  padding: 14,
+  padding: 12,
   background: `
     linear-gradient(180deg,
       #7a5232 0%, #6b4226 15%, #7a5232 30%,
@@ -34,7 +40,6 @@ const slateFrameStyle: React.CSSProperties = {
   `,
   border: '2px solid #4a2e18',
   overflow: 'hidden',
-  position: 'relative',
   touchAction: 'none',
   boxSizing: 'border-box',
 }
@@ -75,18 +80,20 @@ export default function App() {
 
   return (
     <div style={appStyle}>
-      <div style={slateFrameStyle}>
-        <div style={slateInnerStyle}>
-          <SlateCanvas ref={slateRef} />
-          <SlateControls
-            tool={tool}
-            chalkColor={chalkColor}
-            onToolChange={handleToolChange}
-            onColorChange={handleColorChange}
-            onClear={handleClear}
-          />
+      <div style={slateAreaStyle}>
+        <div style={slateFrameStyle}>
+          <div style={slateInnerStyle}>
+            <SlateCanvas ref={slateRef} />
+          </div>
         </div>
       </div>
+      <SlateControls
+        tool={tool}
+        chalkColor={chalkColor}
+        onToolChange={handleToolChange}
+        onColorChange={handleColorChange}
+        onClear={handleClear}
+      />
     </div>
   )
 }
