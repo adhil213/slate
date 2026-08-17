@@ -1,0 +1,37 @@
+# Digital Slate
+
+Digital Slate is a free browser-based virtual slate that lets users write with their finger, touchscreen, or mouse.
+
+## Website
+
+https://slate-80zy.onrender.com/
+
+## Description
+
+A simple digital recreation of writing on a traditional school slate with chalk. Open the site, start writing immediately. No login, no signup, no ads.
+
+## Features
+
+- Finger and touchscreen writing
+- Mouse and trackpad support
+- Chalk-like writing with sound
+- Multiple chalk colors (white, red, rose, orange)
+- Eraser tool
+- One-click clear
+- Wooden frame design
+- Works offline after first load
+- No account required
+- Mobile friendly
+- Lightweight and fast
+
+## Best suited for
+
+- Digital slate writing
+- School slate experience
+- Chalk-style writing
+- Finger writing on phone
+- Touchscreen writing
+- Nostalgic slate experience
+- Simple educational writing practice
+- Kids writing practice
+- Quick notes with chalk feel

@@ -1,32 +1,50 @@
-# React + TypeScript + Vite
+# Digital Slate
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A free browser-based digital slate that recreates the experience of writing on a traditional school slate with chalk.
 
-Currently, two official plugins are available:
+## Try it
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**https://slate-80zy.onrender.com/**
 
-## React Compiler
+Open on your phone or computer — no login, no download, no signup.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the Oxlint configuration
+- **Finger writing** — touch the slate and write with your finger
+- **Mouse support** — click and drag on desktop
+- **Stylus support** — works with stylus input
+- **Chalk sound** — subtle chalk-on-slate audio
+- **4 chalk colors** — white, red, rose, orange
+- **Eraser** — switch to eraser mode and rub out mistakes
+- **One-click clear** — wipe the entire slate
+- **Wooden frame** — nostalgic school slate design
+- **Offline** — works after first visit, no internet needed
+- **Mobile-first** — designed for phones, works everywhere
+- **Lightweight** — no heavy libraries, fast on any device
+- **No account** — nothing to sign up for
+- **Privacy** — everything stays in your browser
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## How to Use
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+1. Open the website
+2. Touch or click the dark slate surface
+3. Write with your finger or mouse
+4. Use the bottom toolbar to switch colors, erase, or clear
+5. Toggle chalk sound on/off
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Tech Stack
+
+- React + TypeScript
+- Vite
+- HTML Canvas (2D)
+- Pointer Events API
+- Web Audio API
+- No backend, no database, no API
+
+## Keywords
+
+Digital slate, online slate, school slate, slate writing, virtual slate, chalk writing, write on slate, slate for phone, finger writing, touchscreen writing, educational writing tool, nostalgic slate experience
+
+## License
+
+MIT
