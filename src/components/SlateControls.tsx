@@ -1,11 +1,13 @@
 import { useState, useCallback, useEffect } from 'react'
 import { setMuted, isMuted, initAudio } from '../lib/audio'
 import { clearStorage } from '../lib/canvas'
-import type { Tool } from './SlateCanvas'
+import { CHALK_COLORS, type Tool, type ChalkColor } from '../lib/types'
 
 interface SlateControlsProps {
   tool: Tool
+  chalkColor: ChalkColor
   onToolChange: (tool: Tool) => void
+  onColorChange: (color: ChalkColor) => void
   onClear: () => void
 }
 
@@ -19,7 +21,6 @@ const btnBase: React.CSSProperties = {
   fontSize: 18,
   color: '#c8bfb0',
   background: 'rgba(0,0,0,0.25)',
-  backdropFilter: 'blur(2px)',
   transition: 'background 0.15s, color 0.15s',
   flexShrink: 0,
 }
@@ -48,7 +49,19 @@ const soundStyle: React.CSSProperties = {
   zIndex: 10,
 }
 
-export default function SlateControls({ tool, onToolChange, onClear }: SlateControlsProps) {
+const colorDot = (color: string, active: boolean): React.CSSProperties => ({
+  width: 28,
+  height: 28,
+  borderRadius: '50%',
+  background: color,
+  border: active ? '2px solid rgba(255,255,255,0.8)' : '2px solid rgba(255,255,255,0.2)',
+  boxShadow: active ? `0 0 8px ${color}` : 'none',
+  transition: 'border 0.15s, box-shadow 0.15s',
+  cursor: 'pointer',
+  flexShrink: 0,
+})
+
+export default function SlateControls({ tool, chalkColor, onToolChange, onColorChange, onClear }: SlateControlsProps) {
   const [muted, setMutedState] = useState(isMuted())
   const [showConfirm, setShowConfirm] = useState(false)
 
@@ -109,6 +122,18 @@ export default function SlateControls({ tool, onToolChange, onClear }: SlateCont
         style={containerStyle}
         onPointerDown={(e) => e.stopPropagation()}
       >
+        {CHALK_COLORS.map((c) => (
+          <button
+            key={c}
+            onClick={() => onColorChange(c)}
+            style={colorDot(c, chalkColor === c && tool === 'chalk')}
+            aria-label={`Chalk color ${c}`}
+            title={c}
+          />
+        ))}
+
+        <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.15)', flexShrink: 0 }} />
+
         <button
           onClick={() => onToolChange(tool === 'chalk' ? 'eraser' : 'chalk')}
           style={tool === 'eraser' ? btnActive : btnBase}

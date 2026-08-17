@@ -1,11 +1,7 @@
 import { useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react'
 import { scheduleSave, restoreCanvas, getCanvasScale } from '../lib/canvas'
 import { initAudio, startChalkSound, stopChalkSound } from '../lib/audio'
-
-export type Tool = 'chalk' | 'eraser'
-
-export const CHALK_COLORS = ['#e8e0d4', '#d94040', '#e06080', '#e89040'] as const
-export type ChalkColor = (typeof CHALK_COLORS)[number]
+import type { Tool, ChalkColor } from '../lib/types'
 
 export interface SlateHandle {
   setTool: (tool: Tool) => void

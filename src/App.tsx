@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
-import SlateCanvas, { type SlateHandle, type Tool } from './components/SlateCanvas'
+import SlateCanvas, { type SlateHandle } from './components/SlateCanvas'
 import SlateControls from './components/SlateControls'
+import type { Tool, ChalkColor } from './lib/types'
 
 const appStyle: React.CSSProperties = {
   width: '100%',
@@ -53,11 +54,19 @@ const slateInnerStyle: React.CSSProperties = {
 
 export default function App() {
   const [tool, setTool] = useState<Tool>('chalk')
+  const [chalkColor, setChalkColor] = useState<ChalkColor>('#e8e0d4')
   const slateRef = useRef<SlateHandle>(null)
 
   const handleToolChange = useCallback((t: Tool) => {
     setTool(t)
     slateRef.current?.setTool(t)
+  }, [])
+
+  const handleColorChange = useCallback((c: ChalkColor) => {
+    setChalkColor(c)
+    setTool('chalk')
+    slateRef.current?.setChalkColor(c)
+    slateRef.current?.setTool('chalk')
   }, [])
 
   const handleClear = useCallback(() => {
@@ -71,7 +80,9 @@ export default function App() {
           <SlateCanvas ref={slateRef} />
           <SlateControls
             tool={tool}
+            chalkColor={chalkColor}
             onToolChange={handleToolChange}
+            onColorChange={handleColorChange}
             onClear={handleClear}
           />
         </div>
