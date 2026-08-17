@@ -4,8 +4,12 @@ import { initAudio, startChalkSound, stopChalkSound } from '../lib/audio'
 
 export type Tool = 'chalk' | 'eraser'
 
+export const CHALK_COLORS = ['#e8e0d4', '#d94040', '#e06080', '#e89040'] as const
+export type ChalkColor = (typeof CHALK_COLORS)[number]
+
 export interface SlateHandle {
   setTool: (tool: Tool) => void
+  setChalkColor: (color: ChalkColor) => void
   clearCanvas: () => void
   resize: () => void
 }
@@ -14,6 +18,7 @@ const SlateCanvas = forwardRef<SlateHandle>(function SlateCanvas(_, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const drawingRef = useRef(false)
   const toolRef = useRef<Tool>('chalk')
+  const chalkColorRef = useRef<ChalkColor>('#e8e0d4')
   const lastPosRef = useRef({ x: 0, y: 0 })
   const chalkWidthRef = useRef(3)
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
@@ -32,7 +37,6 @@ const SlateCanvas = forwardRef<SlateHandle>(function SlateCanvas(_, ref) {
 
     if (newW === canvas.width && newH === canvas.height) return
 
-    // Preserve drawing via offscreen canvas
     const offscreen = document.createElement('canvas')
     offscreen.width = canvas.width
     offscreen.height = canvas.height
@@ -47,8 +51,8 @@ const SlateCanvas = forwardRef<SlateHandle>(function SlateCanvas(_, ref) {
 
   const setupChalk = useCallback((ctx: CanvasRenderingContext2D) => {
     ctx.globalCompositeOperation = 'source-over'
-    ctx.strokeStyle = '#e8e0d4'
-    ctx.fillStyle = '#e8e0d4'
+    ctx.strokeStyle = chalkColorRef.current
+    ctx.fillStyle = chalkColorRef.current
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
     ctx.lineWidth = chalkWidthRef.current
@@ -98,11 +102,12 @@ const SlateCanvas = forwardRef<SlateHandle>(function SlateCanvas(_, ref) {
       const dy = y1 - y0
       const dist = Math.sqrt(dx * dx + dy * dy)
       const speed = Math.min(dist / 4, 1)
+      const color = chalkColorRef.current
 
       ctx.globalAlpha = 0.55 + speed * 0.35
       ctx.globalCompositeOperation = 'source-over'
-      ctx.strokeStyle = '#e8e0d4'
-      ctx.fillStyle = '#e8e0d4'
+      ctx.strokeStyle = color
+      ctx.fillStyle = color
       ctx.lineWidth = chalkWidthRef.current * (0.85 + speed * 0.3)
 
       ctx.beginPath()
@@ -207,6 +212,13 @@ const SlateCanvas = forwardRef<SlateHandle>(function SlateCanvas(_, ref) {
         setupChalk(ctx)
       } else {
         setupEraser(ctx)
+      }
+    },
+    setChalkColor: (color: ChalkColor) => {
+      chalkColorRef.current = color
+      const ctx = ctxRef.current
+      if (ctx && toolRef.current === 'chalk') {
+        setupChalk(ctx)
       }
     },
     clearCanvas: () => {

@@ -14,17 +14,28 @@ const appStyle: React.CSSProperties = {
 }
 
 const slateFrameStyle: React.CSSProperties = {
-  width: 'calc(100% - 16px)',
-  height: 'calc(100% - 16px)',
+  width: 'calc(100% - 28px)',
+  height: 'calc(100% - 28px)',
   maxWidth: 900,
   maxHeight: 1200,
-  background: '#1e1b18',
-  borderRadius: 6,
-  boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5), 0 4px 20px rgba(0,0,0,0.4)',
-  border: '2px solid #2a2622',
+  padding: 14,
+  background: `
+    linear-gradient(180deg,
+      #7a5232 0%, #6b4226 15%, #7a5232 30%,
+      #5c3a20 50%, #6b4226 70%, #7a5232 85%, #5c3a20 100%
+    )
+  `,
+  borderRadius: 8,
+  boxShadow: `
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.3),
+    0 4px 24px rgba(0,0,0,0.5)
+  `,
+  border: '2px solid #4a2e18',
   overflow: 'hidden',
   position: 'relative',
   touchAction: 'none',
+  boxSizing: 'border-box',
 }
 
 const slateInnerStyle: React.CSSProperties = {
@@ -32,7 +43,8 @@ const slateInnerStyle: React.CSSProperties = {
   height: '100%',
   position: 'relative',
   background: '#2a2622',
-  // Subtle noise texture via CSS
+  borderRadius: 4,
+  overflow: 'hidden',
   backgroundImage: `
     repeating-conic-gradient(rgba(255,255,255,0.012) 0% 25%, transparent 0% 50%) 0 0 / 3px 3px,
     repeating-conic-gradient(rgba(0,0,0,0.04) 0% 25%, transparent 0% 50%) 1px 1px / 3px 3px
