@@ -48,3 +48,4 @@ Digital slate, online slate, school slate, slate writing, virtual slate, chalk w
 ## License
 
 MIT
+https://slate-80zy.onrender.com/
