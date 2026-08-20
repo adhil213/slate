@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
 import SlateCanvas, { type SlateHandle } from './components/SlateCanvas'
 import SlateControls from './components/SlateControls'
-import type { Tool, ChalkColor } from './lib/types'
+import type { Tool, ChalkColor, BoardMode } from './lib/types'
 
 const appStyle: React.CSSProperties = {
   width: '100%',
@@ -10,6 +10,7 @@ const appStyle: React.CSSProperties = {
   flexDirection: 'column',
   background: '#3a3530',
   overflow: 'hidden',
+  transition: 'background 0.3s',
 }
 
 const slateAreaStyle: React.CSSProperties = {
@@ -44,7 +45,7 @@ const slateFrameStyle: React.CSSProperties = {
   boxSizing: 'border-box',
 }
 
-const slateInnerStyle: React.CSSProperties = {
+const slateInnerBlack: React.CSSProperties = {
   width: '100%',
   height: '100%',
   position: 'relative',
@@ -57,9 +58,23 @@ const slateInnerStyle: React.CSSProperties = {
   `,
 }
 
+const slateInnerWhite: React.CSSProperties = {
+  width: '100%',
+  height: '100%',
+  position: 'relative',
+  background: '#f0ece6',
+  borderRadius: 4,
+  overflow: 'hidden',
+  backgroundImage: `
+    repeating-conic-gradient(rgba(0,0,0,0.008) 0% 25%, transparent 0% 50%) 0 0 / 3px 3px,
+    repeating-conic-gradient(rgba(255,255,255,0.02) 0% 25%, transparent 0% 50%) 1px 1px / 3px 3px
+  `,
+}
+
 export default function App() {
   const [tool, setTool] = useState<Tool>('chalk')
   const [chalkColor, setChalkColor] = useState<ChalkColor>('#e8e0d4')
+  const [boardMode, setBoardMode] = useState<BoardMode>('black')
   const slateRef = useRef<SlateHandle>(null)
 
   const handleToolChange = useCallback((t: Tool) => {
@@ -74,24 +89,34 @@ export default function App() {
     slateRef.current?.setTool('chalk')
   }, [])
 
+  const handleBoardModeChange = useCallback((m: BoardMode) => {
+    setBoardMode(m)
+    slateRef.current?.setBoardMode(m)
+  }, [])
+
   const handleClear = useCallback(() => {
     slateRef.current?.clearCanvas()
   }, [])
 
   return (
-    <div style={appStyle}>
+    <div style={{
+      ...appStyle,
+      background: boardMode === 'white' ? '#e8e4de' : '#3a3530',
+    }}>
       <div style={slateAreaStyle}>
         <div style={slateFrameStyle}>
-          <div style={slateInnerStyle}>
-            <SlateCanvas ref={slateRef} />
+          <div style={boardMode === 'white' ? slateInnerWhite : slateInnerBlack}>
+            <SlateCanvas ref={slateRef} boardMode={boardMode} />
           </div>
         </div>
       </div>
       <SlateControls
         tool={tool}
         chalkColor={chalkColor}
+        boardMode={boardMode}
         onToolChange={handleToolChange}
         onColorChange={handleColorChange}
+        onBoardModeChange={handleBoardModeChange}
         onClear={handleClear}
       />
     </div>

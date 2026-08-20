@@ -1,24 +1,39 @@
 import { useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react'
 import { scheduleSave, restoreCanvas, getCanvasScale } from '../lib/canvas'
 import { initAudio, startChalkSound, stopChalkSound } from '../lib/audio'
-import type { Tool, ChalkColor } from '../lib/types'
+import type { Tool, ChalkColor, BoardMode } from '../lib/types'
 
 export interface SlateHandle {
   setTool: (tool: Tool) => void
   setChalkColor: (color: ChalkColor) => void
+  setBoardMode: (mode: BoardMode) => void
   clearCanvas: () => void
   resize: () => void
 }
 
-const SlateCanvas = forwardRef<SlateHandle>(function SlateCanvas(_, ref) {
+interface SlateCanvasProps {
+  boardMode: BoardMode
+}
+
+const SlateCanvas = forwardRef<SlateHandle, SlateCanvasProps>(function SlateCanvas({ boardMode }, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const drawingRef = useRef(false)
   const toolRef = useRef<Tool>('chalk')
   const chalkColorRef = useRef<ChalkColor>('#e8e0d4')
+  const boardModeRef = useRef<BoardMode>('black')
   const lastPosRef = useRef({ x: 0, y: 0 })
   const chalkWidthRef = useRef(3)
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
   const restoredRef = useRef(false)
+
+  boardModeRef.current = boardMode
+
+  const resolveChalkColor = useCallback(() => {
+    if (boardModeRef.current === 'white' && chalkColorRef.current === '#e8e0d4') {
+      return '#2a2622'
+    }
+    return chalkColorRef.current
+  }, [])
 
   const resize = useCallback(() => {
     const canvas = canvasRef.current
@@ -46,14 +61,15 @@ const SlateCanvas = forwardRef<SlateHandle>(function SlateCanvas(_, ref) {
   }, [])
 
   const setupChalk = useCallback((ctx: CanvasRenderingContext2D) => {
+    const color = resolveChalkColor()
     ctx.globalCompositeOperation = 'source-over'
-    ctx.strokeStyle = chalkColorRef.current
-    ctx.fillStyle = chalkColorRef.current
+    ctx.strokeStyle = color
+    ctx.fillStyle = color
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
     ctx.lineWidth = chalkWidthRef.current
     ctx.globalAlpha = 0.85
-  }, [])
+  }, [resolveChalkColor])
 
   const setupEraser = useCallback((ctx: CanvasRenderingContext2D) => {
     ctx.globalCompositeOperation = 'destination-out'
@@ -98,7 +114,7 @@ const SlateCanvas = forwardRef<SlateHandle>(function SlateCanvas(_, ref) {
       const dy = y1 - y0
       const dist = Math.sqrt(dx * dx + dy * dy)
       const speed = Math.min(dist / 4, 1)
-      const color = chalkColorRef.current
+      const color = resolveChalkColor()
 
       ctx.globalAlpha = 0.55 + speed * 0.35
       ctx.globalCompositeOperation = 'source-over'
@@ -197,7 +213,7 @@ const SlateCanvas = forwardRef<SlateHandle>(function SlateCanvas(_, ref) {
       canvas.removeEventListener('contextmenu', onContextMenu)
       resizeObserver.disconnect()
     }
-  }, [resize, getCanvasPos, setupChalk, setupEraser])
+  }, [resize, getCanvasPos, setupChalk, setupEraser, resolveChalkColor])
 
   useImperativeHandle(ref, () => ({
     setTool: (tool: Tool) => {
@@ -216,6 +232,9 @@ const SlateCanvas = forwardRef<SlateHandle>(function SlateCanvas(_, ref) {
       if (ctx && toolRef.current === 'chalk') {
         setupChalk(ctx)
       }
+    },
+    setBoardMode: (mode: BoardMode) => {
+      boardModeRef.current = mode
     },
     clearCanvas: () => {
       const canvas = canvasRef.current
