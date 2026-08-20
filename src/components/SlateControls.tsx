@@ -1,13 +1,15 @@
 import { useState, useCallback, useEffect } from 'react'
 import { setMuted, isMuted, initAudio } from '../lib/audio'
 import { clearStorage } from '../lib/canvas'
-import { CHALK_COLORS, type Tool, type ChalkColor } from '../lib/types'
+import { CHALK_COLORS, type Tool, type ChalkColor, type BoardMode } from '../lib/types'
 
 interface SlateControlsProps {
   tool: Tool
   chalkColor: ChalkColor
+  boardMode: BoardMode
   onToolChange: (tool: Tool) => void
   onColorChange: (color: ChalkColor) => void
+  onBoardModeChange: (mode: BoardMode) => void
   onClear: () => void
 }
 
@@ -61,7 +63,7 @@ const colorDot = (color: string, active: boolean): React.CSSProperties => ({
   padding: 0,
 })
 
-export default function SlateControls({ tool, chalkColor, onToolChange, onColorChange, onClear }: SlateControlsProps) {
+export default function SlateControls({ tool, chalkColor, boardMode, onToolChange, onColorChange, onBoardModeChange, onClear }: SlateControlsProps) {
   const [muted, setMutedState] = useState(isMuted())
   const [showConfirm, setShowConfirm] = useState(false)
 
@@ -87,15 +89,25 @@ export default function SlateControls({ tool, chalkColor, onToolChange, onColorC
     setMuted(isMuted())
   }, [])
 
+  const getName = (hex: string, mode: BoardMode) => {
+    if (hex === '#e8e0d4') return mode === 'white' ? 'Black' : 'White'
+    if (hex === '#d94040') return 'Red'
+    if (hex === '#e06080') return 'Rose'
+    return 'Orange'
+  }
+
+  const getDisplay = (hex: string, mode: BoardMode) =>
+    mode === 'white' && hex === '#e8e0d4' ? '#2a2622' : hex
+
   return (
     <div style={barStyle}>
       {CHALK_COLORS.map((c) => (
         <button
           key={c}
           onClick={() => onColorChange(c)}
-          style={colorDot(c, chalkColor === c && tool === 'chalk')}
-          aria-label={`Chalk color ${c}`}
-          title={c}
+          style={colorDot(getDisplay(c, boardMode), chalkColor === c && tool === 'chalk')}
+          aria-label={`Chalk color: ${getName(c, boardMode)}`}
+          title={getName(c, boardMode)}
         />
       ))}
 
@@ -141,6 +153,19 @@ export default function SlateControls({ tool, chalkColor, onToolChange, onColorC
             <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
           </svg>
         )}
+      </button>
+
+      <div style={dividerStyle} />
+
+      <button
+        onClick={() => onBoardModeChange(boardMode === 'black' ? 'white' : 'black')}
+        style={boardMode === 'white' ? btnActive : btnBase}
+        aria-label={boardMode === 'black' ? 'Switch to white board' : 'Switch to black board'}
+        title={boardMode === 'black' ? 'White board' : 'Black board'}
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" fill={boardMode === 'white' ? '#fff' : '#1e1b18'} stroke="currentColor" />
+        </svg>
       </button>
 
       <div style={dividerStyle} />
